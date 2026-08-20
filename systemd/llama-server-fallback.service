@@ -1,0 +1,30 @@
+# /etc/systemd/system/llama-server-fallback.service
+# Hermes 4 14B — fast fallback when the primary is OOMing or for interactive tasks.
+# Manual start.
+
+[Unit]
+Description=llama.cpp serving Hermes 4 14B (fast fallback)
+After=network-online.target
+Wants=network-online.target
+Conflicts=llama-server-primary.service llama-server-heavy.service
+
+[Service]
+Type=simple
+User=USER
+WorkingDirectory=/home/USER/llama.cpp
+ExecStart=/home/USER/llama.cpp/build/bin/llama-server \
+  --model /home/USER/models/hermes-4-14b/Hermes-4-14B-Q4_K_M.gguf \
+  --n-gpu-layers 999 \
+  --ctx-size 32768 \
+  --threads 8 \
+  --threads-batch 8 \
+  --batch-size 512 \
+  --flash-attn \
+  --host 0.0.0.0 \
+  --port 8082
+Restart=no
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+# No [Install] — manual start only.

@@ -1,0 +1,13 @@
+# /etc/systemd/system/hermes-weekly.timer
+# Fires the weekly recap on Sundays at 20:00 IST.
+
+[Unit]
+Description=Weekly recap on Sundays at 20:00 IST
+
+[Timer]
+OnCalendar=Sun *-*-* 20:00:00
+Persistent=true
+AccuracySec=5min
+
+[Install]
+WantedBy=timers.target

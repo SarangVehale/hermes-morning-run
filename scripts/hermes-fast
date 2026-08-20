@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# hermes-fast — run Hermes Agent against the small Qwen2.5-3B sidecar on ROG:8081
+# instead of Gemma 4. Use this for OAuth flows, MCP probes, config smoke-tests,
+# skill prompt iteration — anything where Gemma 4 quality isn't needed and you'd
+# rather save 10× the wall time.
+#
+# Robustness vs the old version:
+#   1. On entry, ALWAYS revert to primary first. Even if a prior run crashed
+#      in fast mode (SIGKILL'd terminal, etc.), this normalizes the state
+#      before doing anything else.
+#   2. Exit trap on EXIT + INT + TERM reverts to primary at end of normal flow.
+#   3. If you ever suspect the config is stuck in fast mode anyway, run
+#      `~/scripts/hermes-revert` to force it back.
+
+set -e
+
+PRIMARY_URL="http://rog:8080/v1"
+PRIMARY_MODEL="gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf"
+FAST_URL="http://rog:8081/v1"
+FAST_MODEL="Qwen2.5-3B-Instruct-Q4_K_M.gguf"
+
+HERMES=$HOME/.local/bin/hermes
+
+revert_to_primary() {
+    "$HERMES" config set model.base_url "$PRIMARY_URL"   >/dev/null
+    "$HERMES" config set model.default  "$PRIMARY_MODEL" >/dev/null
+}
+
+# Step 1: normalize state (in case a previous run left config in fast mode)
+revert_to_primary
+
+# Step 2: revert trap on exit
+trap revert_to_primary EXIT INT TERM
+
+# Step 3: swap to fast
+"$HERMES" config set model.base_url "$FAST_URL"   >/dev/null
+"$HERMES" config set model.default  "$FAST_MODEL" >/dev/null
+
+# Step 4: sanity check the fast server is up before launching the agent
+if ! curl -sf --max-time 5 "$FAST_URL/models" >/dev/null; then
+    echo "ERROR: fast model server at $FAST_URL is not responding." >&2
+    echo "Check on rog: systemctl --user status llama-server-fast" >&2
+    exit 1
+fi
+
+# Step 5: run hermes with whatever args
+"$HERMES" "$@"

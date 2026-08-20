@@ -1,0 +1,19 @@
+# /etc/systemd/system/hermes-weekly.service
+# Runs the weekly recap. Triggered by hermes-weekly.timer.
+
+[Unit]
+Description=Hermes Agent weekly recap
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=USER
+WorkingDirectory=/home/USER/vault-ai
+Environment="VAULT_ROOT=/home/USER/vault-ai"
+Environment="HOME=/home/USER"
+ExecStart=/home/USER/scripts/weekly-recap.sh
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=20min
+Restart=no

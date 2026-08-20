@@ -1,0 +1,21 @@
+.unread-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--interactive-accent);
+  margin-left: 6px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Dim past days' entries to grey */
+.past-day {
+  opacity: 0.35;
+  transition: opacity 0.2s ease;
+}
+
+/* Restore full opacity on hover so you can still read them */
+.past-day:hover {
+  opacity: 1;
+}

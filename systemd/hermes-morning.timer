@@ -1,0 +1,13 @@
+# /etc/systemd/system/hermes-morning.timer
+# Fires the morning workflow at 05:55 IST every day.
+
+[Unit]
+Description=Daily morning workflow at 05:55 IST
+
+[Timer]
+OnCalendar=*-*-* 05:55:00
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

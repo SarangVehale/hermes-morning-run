@@ -1,0 +1,32 @@
+# /etc/systemd/system/llama-server-primary.service
+# Hermes 4 35B A3B — primary inference server. Always-on after boot/wake.
+# Adjust User= and paths if your home directory differs.
+
+[Unit]
+Description=llama.cpp serving Hermes 4 35B A3B (primary)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=USER
+WorkingDirectory=/home/USER/llama.cpp
+ExecStart=/home/USER/llama.cpp/build/bin/llama-server \
+  --model /home/USER/models/hermes-4-35b-a3b/Hermes-4-35B-A3B-Q4_K_M.gguf \
+  --n-gpu-layers 22 \
+  --ctx-size 32768 \
+  --threads 8 \
+  --threads-batch 8 \
+  --batch-size 512 \
+  --flash-attn \
+  --host 0.0.0.0 \
+  --port 8080
+Restart=on-failure
+RestartSec=10s
+
+# Tighten security a bit. Drop if it conflicts with CUDA access.
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

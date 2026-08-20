@@ -1,0 +1,43 @@
+# Environment
+.env
+.env.local
+.envrc
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.venv/
+venv/
+morning-venv/
+
+# Jekyll / Pages build output
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Runtime state (never commit tokens or per-run bookkeeping)
+.hermes/
+mcp-tokens/
+*.token
+*.credentials
+
+# Local logs
+*.log
+logs/
+
+# Archives
+*.zip

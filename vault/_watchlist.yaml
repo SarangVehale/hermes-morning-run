@@ -1,0 +1,53 @@
+# Watchlist for Daily Watchlist skill
+#
+# YouTube channel_id is what comes after "channel_id=" in a channel's RSS URL.
+# Find it by viewing source on a channel page and grepping for "channelId":"UC...".
+# If a creator has channel_id: null, Hermes resolves it on first run.
+#
+# For blogs, "feed" is preferred. If only "url" is set, Hermes probes /feed,
+# /feed.xml, /atom.xml, /rss.xml, /index.xml on first run.
+
+youtube:
+  - name: Veritasium
+    channel_id: UCHnyfMqiRRG1u-2MsSQLbXA
+  - name: 3Blue1Brown
+    channel_id: UCYO_jab_esuFRV4b17AJtAw
+  - name: Alex Ziskind
+    channel_id: UCajiMK_CY9icRhLepS8_3ug
+  - name: ThePrimeagen
+    channel_id: UC8ENHE5xdFSwx71u3fDH5Xw
+  - name: NetworkChuck
+    channel_id: UC9x0AN7BWHpCDHSm9NiJFJQ
+  - name: Linus Tech Tips
+    channel_id: UCXuqSBlHAE6Xw-yeJA0Tunw
+  - name: Cleo Abram
+    channel_id: null   # resolve on first run
+  - name: World Science Festival
+    channel_id: null
+  - name: Kai Notebook
+    channel_id: null
+  - name: vt.physics
+    channel_id: null
+  - name: jvscholz
+    channel_id: null
+  - name: runtimebrt
+    channel_id: null
+  - name: Today I Learned Science
+    channel_id: null
+
+blogs:
+  - name: Siddhant Singh (qecarxiv)
+    url: https://siddhant-singh.com
+    feed: null   # probe on first run
+  - name: reysu
+    url: null    # ask user for actual URL on first run
+    feed: null
+  - name: NetworkChuck blog
+    url: https://blog.networkchuck.com
+    feed: null
+  - name: Simon Willison
+    url: https://simonwillison.net
+    feed: https://simonwillison.net/atom/everything/
+
+# Add more creators by appending entries here.
+# After editing, the next morning run picks up new entries automatically.

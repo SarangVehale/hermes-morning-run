@@ -1,0 +1,9 @@
+{
+  "id": "unread-dot",
+  "name": "Unread Dot",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.4",
+  "description": "Shows a blue dot next to files with unread: true in frontmatter. Auto-clears when you open the file.",
+  "author": "Eric Su",
+  "isDesktopOnly": false
+}

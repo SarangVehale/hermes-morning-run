@@ -1,0 +1,26 @@
+# /etc/systemd/system/hermes-morning.service
+# Runs the morning workflow. Triggered by hermes-morning.timer.
+
+[Unit]
+Description=Hermes Agent morning workflow
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=USER
+WorkingDirectory=/home/USER/vault-ai
+Environment="VAULT_ROOT=/home/USER/vault-ai"
+Environment="HOME=/home/USER"
+# DRY_RUN=1 stays until the first scheduled fire is verified. To go live:
+# remove this line, then `sudo systemctl daemon-reload`. Next fire will push
+# to GitHub and ssh-shutdown the ROG.
+Environment="DRY_RUN=1"
+ExecStart=/home/USER/scripts/morning-run.sh
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=90min
+
+# Do not auto-restart — if the morning run fails, we want to investigate,
+# not have systemd keep retrying.
+Restart=no

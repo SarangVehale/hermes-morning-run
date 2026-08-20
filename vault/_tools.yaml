@@ -1,0 +1,55 @@
+# Tools to watch for new GitHub releases.
+# The GitHub Releases skill checks each repo daily and surfaces new releases
+# (especially ones with breaking changes affecting this user's workflow).
+#
+# Add tools you actively use. Remove tools you stop using.
+
+tools:
+  - repo: NousResearch/hermes-agent
+    name: Hermes Agent
+    reason: orchestrator we depend on
+    critical: true
+
+  - repo: ggerganov/llama.cpp
+    name: llama.cpp
+    reason: inference engine on the Ryzen machine
+    critical: true
+
+  - repo: ollama/ollama
+    name: Ollama
+    reason: HP-local fallback model server
+    critical: true
+
+  - repo: yt-dlp/yt-dlp
+    name: yt-dlp
+    reason: Watchlist skill depends on this for YouTube transcripts
+    critical: true
+
+  - repo: kepano/defuddle
+    name: defuddle
+    reason: blog post text extraction
+    critical: false
+
+  - repo: obsidianmd/obsidian-releases
+    name: Obsidian
+    reason: vault application
+    critical: false
+
+  - repo: Vinzent03/obsidian-git
+    name: Obsidian Git
+    reason: cross-device sync
+    critical: true
+
+  - repo: Richard-Weiss/obsidian-heatmap-calendar
+    name: Obsidian Heatmap Calendar
+    reason: dashboard heatmap
+    critical: false
+
+  - repo: BurntSushi/ripgrep
+    name: ripgrep
+    reason: used by concept-stubs and connection-finder scripts
+    critical: false
+
+# When adding a new tool, set critical: true if a breaking release would
+# break your morning workflow. The GitHub Releases skill elevates the callout
+# severity for critical tools.

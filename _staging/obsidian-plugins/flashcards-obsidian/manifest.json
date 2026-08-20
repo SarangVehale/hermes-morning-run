@@ -1,0 +1,11 @@
+{
+  "id": "flashcards-obsidian",
+  "name": "Flashcards",
+  "version": "2.0.0",
+  "minAppVersion": "0.9.17",
+  "description": "Create Anki cloze cards from ==highlighted== text. Fork of reuseman/flashcards-obsidian.",
+  "author": "reysu",
+  "authorUrl": "https://github.com/reysu",
+  "fundingUrl": "https://github.com/reuseman/flashcards-obsidian",
+  "isDesktopOnly": true
+}
