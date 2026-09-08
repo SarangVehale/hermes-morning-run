@@ -16,6 +16,7 @@ Every entry here corresponds to something that actually broke in production over
   <li><a href="#git-conflicts-when-mobile-and-desktop-both-edit">Git conflicts when mobile and desktop both edit</a></li>
   <li><a href="#run-log--heartbeat--vault-lie-about-status">Run log / heartbeat / vault lie about status</a></li>
   <li><a href="#the-diagnostic-command-index">The diagnostic command index</a></li>
+  <li><a href="#verifying-a-clean-decommission">Verifying a clean decommission</a></li>
 </ul>
 </div>
 
@@ -261,6 +262,15 @@ tail -100 ~/.hermes/logs/morning-run-$(date +%Y-%m-%d).log
 # Manually trigger a run (dry-run — no push)?
 DRY_RUN=1 ~/scripts/morning-run.sh
 ```
+
+## Verifying a clean decommission
+
+If you're removing an inference host (or any secondary machine the pipeline used to touch) and want to confirm nothing was left behind, the [History → v2.1 verification sweep](history.html#verification-sweep) has a 14-point checklist that runs entirely from a single SSH command block. It catches systemd units in both scopes, running processes, listening ports, filesystem residue in every plausible location, cron entries, shell rc edits, journal traces, installed packages, WoWLAN kernel state, and disk-freed accounting.
+
+Two edge cases documented from real experience:
+
+- On some Linux WiFi drivers (e.g. Mediatek MT7921), `iw phy0 wowlan show` returns `Operation not supported (-95)` — the driver simply doesn't expose the wowlan interface. That's not a residue; there's nothing to disable. If wake-on-WiFi was ever set up, it was at BIOS level.
+- The ex-inference host's `~/.ssh/authorized_keys` will still contain the orchestrator's key. Removing it completes the "no trust relationship" state at the cost of SSH admin access; keeping it preserves manual admin at the cost of a lingering trust link. Decide explicitly rather than by default.
 
 {% include nav.html
   prev="setup" prev_title="Setup"

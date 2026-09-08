@@ -183,6 +183,8 @@ Total: ~15-20 calls per morning. On a Pro-subscription Claude Sonnet 5 endpoint,
 
 **Lesson.** Architecture should follow *current* usage, not aspirational usage. The two-machine split was justified when the LLM was doing everything. Once the LLM's job shrank, keeping the second machine was cost without benefit. Right-sizing is a design skill; downsizing is a design *courage* — it means admitting yesterday's decision no longer fits.
 
+**Sub-lesson from the cleanup.** Ripping out a component is not the same as verifying it's gone. After stopping services and deleting files, we ran a 14-point sweep (systemd both scopes, processes, ports, filesystem, `.config`, `.local`, `.cache`, `/etc`, cron, shell rc, journal, packages, kernel state, `authorized_keys`) and found the deletion was clean — but the same sweep also surfaced two things that would have quietly persisted otherwise: the WoWLAN kernel-state check that returned `-95` (driver doesn't expose the API — nothing to disable, but worth *confirming* rather than assuming), and the SSH trust relationship in `~/.ssh/authorized_keys` that's silently unaffected by "stop and delete" and needs its own explicit decision. Full sweep and both edge cases are documented in [History → v2.1 verification sweep](history.html#verification-sweep).
+
 ## Reddit 429 storms
 
 **When.** Continuously from v1.0 through v1.5.

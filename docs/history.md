@@ -237,6 +237,79 @@ Changes:
 
 Post-decommission architecture is one machine: an old laptop with Python and the `claude` CLI. Total wall-clock dropped from 15-25 min to 5-15 min (no more ROG cold-start latency, no more WoL wait window).
 
+### Verification sweep
+
+After the deletions, ran a 14-point cleanliness sweep on ROG. Anyone decommissioning their own inference host — for any reason, not just switching to a hosted LLM — can use this as a template.
+
+```bash
+ssh HOST '
+echo "1.  systemd (user + system)";  systemctl --user list-unit-files | grep -Ei "llama|hermes|wowlan|morning|gemma|qwen"
+                                     sudo systemctl list-unit-files    | grep -Ei "llama|hermes|wowlan|morning|gemma|qwen"
+echo "2.  running processes";        ps auxf | grep -iE "llama|gemma|qwen|hermes|morning" | grep -v grep
+echo "3.  listening ports";          ss -tln | awk "NR==1 || \$4 ~ /:808[0-9]|:11434/"
+echo "4.  filesystem under /home";   find /home/USER -maxdepth 4 \( -iname "*llama*" -o -iname "*gguf*" -o -iname "*hermes*" -o -iname "*morning*" -o -iname "gemma*" -o -iname "qwen*" \)
+echo "5.  ~/.config/systemd/user";   ls -la ~/.config/systemd/user/ | grep -Ei "llama|hermes|wowlan|morning"
+echo "6.  ~/.local ~/.cache";        find ~/.local ~/.cache -maxdepth 4 \( -iname "*llama*" -o -iname "*gguf*" -o -iname "*hermes*" -o -iname "gemma*" -o -iname "qwen*" \)
+echo "7.  /etc /opt /usr/local";     sudo find /etc /opt /usr/local -maxdepth 3 \( -iname "*llama*" -o -iname "*hermes*" -o -iname "*morning*" \)
+echo "8.  cron";                     crontab -l; sudo crontab -l; ls /etc/cron.d/ /etc/cron.daily/ /etc/cron.hourly/ | grep -Ei "llama|hermes|morning"
+echo "9.  shell rc";                 grep -HniE "LLAMA|HERMES|MORNING" ~/.bashrc ~/.zshrc ~/.profile ~/.bash_profile
+echo "10. journal 24h";              journalctl --user --since "24 hours ago" | grep -iE "llama|hermes|morning"
+echo "11. pip/uv packages";          pip list | grep -iE "llama|hermes|feedparser"; uv tool list | grep -iE "llama|hermes"
+echo "12. WoWLAN state";             sudo iw phy0 wowlan show
+echo "13. authorized_keys";          cat ~/.ssh/authorized_keys
+echo "14. disk usage";               du -sh ~ && df -h ~ | tail -1
+'
+```
+
+Anything printed under a numbered line is a residue worth investigating. Silence under a line means clean.
+
+### What we found
+
+| # | Check | Result |
+|---|---|---|
+| 1 | systemd unit files (both scopes) | clean |
+| 2 | Running processes | clean |
+| 3 | Listening ports (previously 8080/8081/8082) | clean |
+| 4 | Filesystem under `/home` | clean |
+| 5 | User systemd `.config` residue | clean |
+| 6 | `~/.local` / `~/.cache` residue | clean |
+| 7 | `/etc`, `/opt`, `/usr/local` | clean |
+| 8 | Cron | clean |
+| 9 | Shell rc files (env / aliases) | clean |
+| 10 | Journal (last 24h) | clean (only match: the sweep itself) |
+| 11 | pip / uv packages | clean |
+| 12 | WoWLAN kernel state | see below |
+| 13 | `authorized_keys` | 1 key (HP), kept — see below |
+| 14 | Disk | 50 GB used / 740 GB (was 70 GB pre-cleanup — 28 GB freed) |
+
+### Two edge cases worth writing down
+
+**`iw phy0 wowlan show` → `Operation not supported (-95)`.** On the reference ROG (an Asus Flow X13 with a Mediatek MT7921 WiFi chip on Arch Linux mainline), the wowlan netlink interface isn't exposed by the driver at all. Both `show` and `disable` fail identically with `-95`. That's not a leftover to clean — it's the driver telling us the API doesn't exist. Whatever wake-on-WiFi was happening in v1.4 must have been at BIOS level (ASUS boards typically expose a "Wake on WLAN" toggle under Power Management), not via the kernel `iw` interface.
+
+Practical consequence: if your inference host has the same driver, there is no post-decommission `wowlan disable` step to run. If your host does support wowlan via `iw`, verify with `sudo iw phy0 wowlan show` and clear with `sudo iw phy0 wowlan disable`.
+
+**`~/.ssh/authorized_keys` on the ex-inference host.** After decommissioning, HP's key was still authorized on ROG. That key is what enabled every `ssh rog` command during this session (stopping services, deleting files, running verification sweeps). Removing it completes the "as if the pipeline never existed" state, at the cost of losing SSH admin access to ROG from HP.
+
+Decision matrix:
+
+| Purpose | Keep the key? |
+|---|---|
+| Occasional manual admin from HP (backups, updates, file copy) | Keep |
+| Ability to bring the ex-inference host back into a pipeline later | Keep |
+| Strict decommission to "no HP → ROG trust relationship" | Remove |
+
+We kept it. Removing it — precisely, by matching the exact comment field:
+
+```bash
+# First: find the exact identifying string on the target
+ssh HOST 'cat ~/.ssh/authorized_keys'   # → look at the comment after the key blob
+
+# Then remove that specific line
+ssh HOST "sed -i '/<the comment string>/d' ~/.ssh/authorized_keys"
+```
+
+Don't use a generic marker like `HP_KEY` unless the key's comment actually contains that string — `sed`'s pattern has to match the real text after the key blob (typically `user@host` or a manually-set label like `hp -> rog`).
+
 {% include nav.html
   prev="index" prev_title="Home"
   next="architecture" next_title="Architecture" %}
