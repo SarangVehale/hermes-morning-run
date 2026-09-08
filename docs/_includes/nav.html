@@ -1,0 +1,20 @@
+<style>
+.page-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #eaecef; font-size: 0.95em; gap: 1rem; }
+.page-nav a { text-decoration: none; padding: 0.6rem 1rem; border: 1px solid #d1d5da; border-radius: 6px; color: #159957; background: #fff; }
+.page-nav a:hover { background: #f6f8fa; }
+.page-nav .home { text-align: center; color: #6a737d; }
+.page-nav .disabled { color: #d1d5da; padding: 0.6rem 1rem; }
+.toc { background: #f6f8fa; border-left: 3px solid #159957; padding: 0.8rem 1.2rem; margin: 1.5rem 0; font-size: 0.95em; }
+.toc-title { font-weight: 600; color: #159957; margin-bottom: 0.4rem; }
+.callout { border-left: 4px solid #d1d5da; padding: 0.8rem 1rem; margin: 1rem 0; background: #f6f8fa; border-radius: 4px; }
+.callout.warn { border-color: #f9c513; background: #fffbea; }
+.callout.wrong { border-color: #cb2431; background: #ffeef0; }
+.callout.right { border-color: #28a745; background: #f0fff4; }
+.callout.info { border-color: #0366d6; background: #f1f8ff; }
+.callout-title { font-weight: 600; margin-bottom: 0.4rem; }
+</style>
+<nav class="page-nav">
+  {% if include.prev %}<a href="./{{ include.prev }}.html" class="prev">&larr; {{ include.prev_title }}</a>{% else %}<span class="disabled">&larr; Start</span>{% endif %}
+  <a href="./" class="home">Home</a>
+  {% if include.next %}<a href="./{{ include.next }}.html" class="next">{{ include.next_title }} &rarr;</a>{% else %}<span class="disabled">End &rarr;</span>{% endif %}
+</nav>
