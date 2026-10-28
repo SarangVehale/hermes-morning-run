@@ -60,16 +60,13 @@ For the full architecture, see [`docs/architecture.md`](docs/architecture.md).
 │   ├── oauth-grant.py      # one-shot Google OAuth PKCE helper
 │   ├── weekly-recap.sh     # weekly aggregator
 │   └── concept-stubs.py    # post-run: create stubs for [[wikilinked]] concepts
-├── systemd/                # timer + service units for orchestrator and inference host
+├── systemd/                # timer + service units
 ├── skills/                 # Hermes Agent skills (summarize, summarize-call)
 ├── vault/                  # starter Obsidian vault template
 ├── _staging/               # operational playbooks (maintenance, dry-run, mobile setup)
 ├── docs/                   # GitHub Pages site
-├── rog-setup.sh            # one-shot bootstrap for the inference host
 ├── setup.sh                # one-shot bootstrap for the orchestrator
 ├── SETUP_GUIDE.md          # detailed walkthrough
-├── HANDOFF.md              # notes to a fresh setup session
-├── MIGRATE.md              # notes when moving hosts
 └── CHANGELOG.md
 ```
 

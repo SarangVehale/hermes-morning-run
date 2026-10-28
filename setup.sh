@@ -115,7 +115,7 @@ if [ "$SKIP_SYSTEMD" = "0" ]; then
     say "  enabling timers (NOT starting service — that runs at 05:55 IST)"
     sudo systemctl enable hermes-morning.timer hermes-weekly.timer
     say "  service unit currently has DRY_RUN=1 baked in — remove that line"
-    say "  when first scheduled fire is verified. See MIGRATE.md."
+    say "  when first scheduled fire is verified."
   else
     say "  no systemd/ directory in bundle; skipping"
   fi
